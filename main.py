@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import font
 from tkinter import messagebox
 import time
-from typing import BinaryIO
+
 
 root = Tk()
 root.title("PROD++")

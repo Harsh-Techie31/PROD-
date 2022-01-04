@@ -4,9 +4,16 @@ from tkinter import messagebox
 import time
 
 
+def main_closing():
+    if messagebox.askokcancel("Quit", "Are you sure you want to quit PROD++ ?"):
+        root.destroy()
+
+
 root = Tk()
 root.title("PROD++")
 root.iconbitmap("logos//m.ico")
+root.resizable(width=False, height=False)
+root.protocol("WM_DELETE_WINDOW", main_closing)
 row_no = 1
 boxes = []
 tasks = []
@@ -18,6 +25,29 @@ seconds = 0
 running = False
 row_s = 3
 # function
+
+
+def on_closing():
+    if messagebox.askokcancel("Quit", "Are you sure you want to quit Stopwatch?"):
+        new1.destroy()
+
+
+def on_closing_timer():
+    if messagebox.askokcancel("Quit", "Are you sure you want to quit Timer?"):
+        new3.destroy()
+
+
+def on_closing_water():
+    if messagebox.askokcancel("Quit", "Are you sure you want to quit Water Reminder?"):
+        new6.destroy()
+
+
+def on_closing_calc():
+    screen.delete(0, END)
+    if messagebox.askokcancel("Quit", "Are you sure you want to quit Calculator?"):
+        root_c.destroy()
+
+
 def new_task():
     global row_no
     global b
@@ -31,7 +61,8 @@ def new_task():
         bg="#30110d",
         fg="#cd7700",
     )
-    b.grid(row=row_no, columnspan=2, column=0, sticky=W, pady=(10, 2), padx=(10, 5))
+    b.grid(row=row_no, columnspan=2, column=0,
+           sticky=W, pady=(10, 2), padx=(10, 5))
     var = StringVar()
     apt = Checkbutton(
         new,
@@ -72,6 +103,8 @@ def todo():
     new.geometry("550x750")
     new.configure(bg="#F0B27A")
     new.iconbitmap("logos//todo.ico")
+    new.resizable(width=False, height=False)
+
     add_task = Button(
         new,
         text="Add Task",
@@ -95,10 +128,14 @@ def todo():
 
 
 def stopwatchz():
+
+    global new1
     new1 = Toplevel()
     new1.title("Stopwatch")
     # new1.geometry("615x210")
     new1.iconbitmap("logos//stopw.ico")
+    new1.protocol("WM_DELETE_WINDOW", on_closing)
+    new1.resizable(width=False, height=False)
 
     def start():
         # stopwatch_label.after(1000)
@@ -162,7 +199,8 @@ def stopwatchz():
         pass
 
     # ***widgets****
-    stopwatch_label = Label(new1, text="00:00:00", font=("ubuntu", 80), borderwidth=10)
+    stopwatch_label = Label(new1, text="00:00:00",
+                            font=("ubuntu", 80), borderwidth=10)
     stopwatch_label.grid(row=0, columnspan=5)
 
     start_z = Button(
@@ -201,10 +239,18 @@ def stopwatchz():
         new1,
         text="Close",
         font=("Arial", 20),
-        command=new1.destroy,
+        command=kill,
         bg="#26F5EA"
         # ).pack(side=LEFT, ipadx=20, ipady=20)
     ).grid(row=1, column=4, ipadx=15, ipady=5)
+    pass
+
+
+def kill():
+    global new1, hours, minutes, seconds, running
+    hours, minutes, seconds = 0, 0, 0
+    running = False
+    new1.destroy()
     pass
 
 
@@ -213,6 +259,7 @@ def notepad():
     new2 = Toplevel()
     new2.title("Notepad by PROD++")
     new2.iconbitmap("logos//note.ico")
+    new2.resizable(width=False, height=False)
     a = Text(new2, height=15, width=60, font=("Cooper Black", 20))
     a.grid(row=0, column=0, sticky=N + S + W + E)
     a.configure(bg="#ffffcc", fg="black")
@@ -221,6 +268,7 @@ def notepad():
 def show():
 
     messagebox.showinfo("Timer Countdown", "Time's Up")
+    new3.destroy()
     pass
 
 
@@ -244,25 +292,14 @@ def update_timerz():
         ms = f"{mins}" if mins > 9 else f"0{mins}"
         ss = f"{secs}" if secs > 9 else f"0{secs}"
 
-        # updating the GUI window after decrementing the
-        # temp value every time
         lab.config(text=f"{hs}:{ms}:{ss}")
         global update_time
 
-        # update_time = lab.after(1000, update_timerz)
         root.update()
         time.sleep(1)
-
-        # when temp value = 0; then a messagebox pop's up
-        # with a message:"Time's up"
-        # if (temp == 0):
-        #     messagebox.showinfo("Time Countdown", "Time's up ")
-
-        # after every one sec the value of temp will be decremented
-        # by one
         temp -= 1
 
-        if temp == 0:
+        if temp == -1:
             show()
 
 
@@ -280,8 +317,9 @@ def timer_display():
     setz.destroy()
     settings.destroy()
 
-    lab = Label(new3, text=f"{h}:{m}:{s}", font=("Arial", 20))
-    lab.grid(row=1, columnspan=5)
+    lab = Label(new3, text=f"{h}:{m}:{s}", font=(
+        "Arial", 35, "bold"), bg="#42F0D7")
+    lab.grid(row=1, columnspan=5, padx=40, ipadx=10)
     update_timerz()
 
     pass
@@ -293,6 +331,8 @@ def timerz():
     new3.title("TImer by PROD++")
     new3.configure(bg="#42F0D7")
     new3.iconbitmap("logos//timer.ico")
+    new3.protocol("WM_DELETE_WINDOW", on_closing_timer)
+    new3.resizable(width=False, height=False)
     hours = [00, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     minutes = [i for i in range(0, 61)]
     seconds = [i for i in range(0, 61)]
@@ -334,14 +374,20 @@ def timerz():
     pass
 
 
+calc_done = True
+
+
 def calc_func():
-    root = Toplevel()
-    root.title("Calc by PROD++!")
-    root.iconbitmap("logos//calc.ico")
+    global root_c, screen
+    root_c = Toplevel()
+    root_c.title("Calc by PROD++!")
+    root_c.iconbitmap("logos//calc.ico")
+    root_c.resizable(width=False, height=False)
+    root_c.protocol("WM_DELETE_WINDOW", on_closing_calc)
     # root.iconbitmap('image.ico')
 
     screen = Entry(
-        root,
+        root_c,
         width=18,
         borderwidth=4,
         relief=GROOVE,
@@ -352,9 +398,17 @@ def calc_func():
     screen.grid(row=0, column=0, columnspan=3, ipady=20)
 
     def myclick(num):
-        a = screen.get()
-        screen.delete(0, END)
-        screen.insert(0, str(a) + str(num))
+        global calc_done , math 
+        if not calc_done:
+            screen.delete(0, END)
+            calc_done = True
+            screen.insert(0, str(num))
+            print(screen.get())
+            math = "lol"
+        else:
+            a = screen.get()
+            screen.delete(0, END)
+            screen.insert(0, str(a) + str(num))
 
     def clear_screen():
         screen.delete(0, END)
@@ -388,28 +442,34 @@ def calc_func():
         screen.delete(0, END)
 
     def equal():
+        global calc_done
         if math == "+":
             s_num = int(screen.get())
             screen.delete(0, END)
             screen.insert(0, f"{str(f_num)}+{str(s_num)}={f_num + s_num}")
+            calc_done = False
 
         elif math == "-":
             s_num = int(screen.get())
             screen.delete(0, END)
             screen.insert(0, f"{str(f_num)}-{str(s_num)}={f_num - s_num}")
+            calc_done = False
 
         elif math == "*":
             s_num = int(screen.get())
             screen.delete(0, END)
             screen.insert(0, f"{str(f_num)}*{str(s_num)}={f_num * s_num}")
+            calc_done = False
 
-        else:
+        elif math == "/":
             s_num = int(screen.get())
             screen.delete(0, END)
             screen.insert(0, f"{str(f_num)}/{str(s_num)}={f_num / s_num}")
-
+            calc_done = False
+        else :
+            pass
     button_0 = Button(
-        root,
+        root_c,
         text="0",
         padx=30,
         pady=13,
@@ -419,7 +479,7 @@ def calc_func():
         fg="white",
     ).grid(row=4, column=0)
     button_1 = Button(
-        root,
+        root_c,
         text="1",
         padx=30,
         pady=13,
@@ -429,7 +489,7 @@ def calc_func():
         fg="white",
     ).grid(row=3, column=0)
     button_2 = Button(
-        root,
+        root_c,
         text="2",
         padx=30,
         pady=13,
@@ -439,7 +499,7 @@ def calc_func():
         fg="white",
     ).grid(row=3, column=1)
     button_3 = Button(
-        root,
+        root_c,
         text="3",
         padx=30,
         pady=13,
@@ -449,7 +509,7 @@ def calc_func():
         fg="white",
     ).grid(row=3, column=2)
     button_4 = Button(
-        root,
+        root_c,
         text="4",
         padx=30,
         pady=13,
@@ -459,7 +519,7 @@ def calc_func():
         fg="white",
     ).grid(row=2, column=0)
     button_5 = Button(
-        root,
+        root_c,
         text="5",
         padx=30,
         pady=13,
@@ -469,7 +529,7 @@ def calc_func():
         fg="white",
     ).grid(row=2, column=1)
     button_6 = Button(
-        root,
+        root_c,
         text="6",
         padx=30,
         pady=13,
@@ -479,7 +539,7 @@ def calc_func():
         fg="white",
     ).grid(row=2, column=2)
     button_7 = Button(
-        root,
+        root_c,
         text="7",
         padx=30,
         pady=13,
@@ -489,7 +549,7 @@ def calc_func():
         fg="white",
     ).grid(row=1, column=0)
     button_8 = Button(
-        root,
+        root_c,
         text="8",
         padx=30,
         pady=13,
@@ -499,7 +559,7 @@ def calc_func():
         fg="white",
     ).grid(row=1, column=1)
     button_9 = Button(
-        root,
+        root_c,
         text="9",
         padx=30,
         pady=13,
@@ -510,7 +570,7 @@ def calc_func():
     ).grid(row=1, column=2)
 
     button_add = Button(
-        root,
+        root_c,
         text="+",
         padx=30,
         pady=13,
@@ -520,7 +580,7 @@ def calc_func():
         fg="#00ff00",
     ).grid(row=4, column=1)
     button_sub = Button(
-        root,
+        root_c,
         text="-",
         padx=33,
         pady=13,
@@ -530,7 +590,7 @@ def calc_func():
         fg="#00ff00",
     ).grid(row=5, column=0)
     button_mul = Button(
-        root,
+        root_c,
         text="*",
         padx=33,
         pady=13,
@@ -540,7 +600,7 @@ def calc_func():
         fg="#00ff00",
     ).grid(row=5, column=1)
     button_div = Button(
-        root,
+        root_c,
         text="/",
         padx=33,
         pady=13,
@@ -551,7 +611,7 @@ def calc_func():
     ).grid(row=5, column=2)
 
     button_eq = Button(
-        root,
+        root_c,
         text="=",
         padx=125,
         pady=15,
@@ -561,7 +621,7 @@ def calc_func():
         fg="white",
     ).grid(row=6, column=0, columnspan=3)
     button_clear = Button(
-        root,
+        root_c,
         text="C",
         padx=28,
         pady=13,
@@ -579,9 +639,12 @@ times = [i for i in range(1, 61)]
 
 
 def noti():
+    global new6
     new6 = Toplevel()
     new6.title("Water Reminder by PROD++")
     new6.iconbitmap("logos//water.ico")
+    new6.resizable(width=False, height=False)
+    new6.protocol("WM_DELETE_WINDOW", on_closing_water)
     # top = LabelFrame(root,text="top")
     top = LabelFrame(new6)
     top.grid(row=0, column=0)
@@ -709,7 +772,7 @@ calc_but = Button(
     fg="#000000",
 ).grid(row=4, ipadx=85, columnspan=2, pady=(20, 0))
 
-calc_but = Button(
+water_but = Button(
     root,
     text="Water Reminder",
     font=("saab", 20),
@@ -723,5 +786,6 @@ calc_but = Button(
 notepad_but = Button(
     root, text="Notes", font=("Saab", 20), command=notepad, bg="#e2d810", fg="#000000"
 ).grid(row=6, ipadx=110, columnspan=2, pady=(20, 10))
+
 
 mainloop()
